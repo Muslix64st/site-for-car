@@ -10,3 +10,7 @@ class Car(models.Model):
     time_crete = models.DateTimeField(auto_now_add=True, verbose_name="Дата добавления")
     time_update = models.DateTimeField(auto_now=True, verbose_name="Обновлено")
     is_published = models.BooleanField(default=True, verbose_name="Публикация")
+
+
+    def __str__(self):
+        return self.title

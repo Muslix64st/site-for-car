@@ -22,7 +22,12 @@ from .views import *
 
 urlpatterns = [
     path('', index,name="home"),                        #http://127.0.0.1:8000/
-    path('cats/<int:cat_id>/', categories, name="categories"),  #http://127.0.0.1:8000/cats/
+    path('about/', about, name="about"),  #http://127.0.0.1:8000/cats/
+    path('add_page/', add_page, name="add_page"),
+    path('contact/', contact, name="contact"),
+    path('login/', login, name="login"),
+    path('post/<int:post_id>', show_post, name="post"),
+    path('cats/<int:cat_id>/', categories, name="categories"),  # http://127.0.0.1:8000/cats/
 ]
 
 handler404 = pageNotFound
