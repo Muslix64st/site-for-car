@@ -14,14 +14,15 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
-
+# from django.core.files.storage import handler
 from django.urls import path
 from .views import *
 
 
 
 urlpatterns = [
-    path('', index),                        #http://127.0.0.1:8000/
-    path('cats/<int:cat_id>/', categories),  #http://127.0.0.1:8000/cats/
-
+    path('', index,name="home"),                        #http://127.0.0.1:8000/
+    path('cats/<int:cat_id>/', categories, name="categories"),  #http://127.0.0.1:8000/cats/
 ]
+
+handler404 = pageNotFound
