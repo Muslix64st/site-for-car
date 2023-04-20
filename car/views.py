@@ -24,8 +24,14 @@ def categories(request, cat_id): return HttpResponse(f'<h1>Отображени�
 def about(request): return render(request, 'car/about.html', {'menu': menu, 'title': 'О сайте'})
 
 def add_page(request):return HttpResponse('<h1>Отображение по категориям</h1>')
+
+
 def contact(request):return HttpResponse('<h1>Отображение по категориям</h1>')
+
+
 def login(request):return HttpResponse('<h1>Отображение по категориям</h1>')
+
+
 def show_post(request, post_id): return HttpResponse(f'<h1>Отображение {post_id}</h1>')
 
 

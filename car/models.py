@@ -1,4 +1,6 @@
 from django.db import models
+from django.urls import reverse
+
 
 # Create your models here.
 
@@ -14,3 +16,20 @@ class Car(models.Model):
 
     def __str__(self):
         return self.title
+
+    def get_absolut_url(self):
+        return reverse('post', kwargs={'post_id': self.pk})
+
+
+
+
+class Category(models.Model):
+    name = models.CharField(max_length=100, db_index=True, verbose_name="Категория")
+
+
+
+    def __str__(self):
+        return self.name
+
+    # def get_absolut_url(self):
+    #     return reverse('cat', kwargs={'catt_id': self.pk})

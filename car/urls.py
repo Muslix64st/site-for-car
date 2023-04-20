@@ -27,7 +27,7 @@ urlpatterns = [
     path('contact/', contact, name="contact"),
     path('login/', login, name="login"),
     path('post/<int:post_id>', show_post, name="post"),
-    path('cats/<int:cat_id>/', categories, name="categories"),  # http://127.0.0.1:8000/cats/
+    path('cats/<int:cat_id>/', categories, name="categories"),
 ]
 
 handler404 = pageNotFound
