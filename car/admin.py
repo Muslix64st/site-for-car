@@ -11,6 +11,7 @@ class CarAdmin(admin.ModelAdmin):
     search_fields = ('title', 'content')
     list_editable = ('is_published',) # Список полей доступных для редактирования в админке
     list_filter = ('is_published', 'time_crete')  # Фильтрация по полям (фильтр добавляется сбоку)
+    prepopulated_fields = {'slug': ('title',)}  # автоматически подтягивает слаг в админке
 
 
 
@@ -18,6 +19,7 @@ class CategoryAdmin(admin.ModelAdmin):
     list_display = ('id','name')
     list_display_links = ('id','name')
     search_fields = ('name',)
+    prepopulated_fields = {'slug': ('name',)} # автоматически подтягивает слаг в админке
 
 
 
