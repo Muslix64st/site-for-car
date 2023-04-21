@@ -1,4 +1,5 @@
 {% load static %}
+{% load car_tags %}
 <!DOCTYPE html>
 <html>
 <head>
@@ -12,19 +13,11 @@
 <table class="table-page" border=0 cellpadding="0" cellspacing="0">
 <tr><td valign=top>
 {% block mainmenu %}
-		<div class="header">
-			<ul id="mainmenu" class="mainmenu">
-			<li class="logo"><a href="{% url 'home' %}"><div class="logo"></div></a></li>
-{% for m in menu %}
-	{% if not forloop.last %}
-			<li><a href="{% url m.url_name %}">{{m.title}}</a></li>
-	{% else %}
-			<li class="last"><a href="{% url m.url_name %}">{{m.title}}</a></li>
-	{% endif %}
-{% endfor %}
-			</ul>
-			<div class="clear"></div>
-		</div>
+
+<!--кусок кода идёт через тег и подтягивается включающий тег list_menu через функцию show_menu  -->
+{% show_menu %}
+<!------------------------------------------------------------------------------------------------->
+
 {% endblock mainmenu %}
 
 
@@ -40,16 +33,13 @@
 		<li><a href="{% url 'home' %}">Все категории</a> </li>
 {% endif %}
 
-{% for c in cats %}
-		{% if c.pk == cat_selected %}
-			<li class="selected">{{ c.name }}</li>
-		{% else %}
-			<li><a href="{{ c.get_absolute_url }}">{{ c.name }}</a> </li>
-		{% endif %}
-{% endfor %}
+<!-- из car_tags дёргаем функцию show_categories которая перекидывает всё в  list_categories
+ можем передать условие фильтрации show_categories '-name' cat_selected -->
+{% show_categories cat_selected=cat_selected %}
+<!----------------------------------------------------------------------------------------------->
 
 		<li class="share">
-		<p>Джанго докс</p>
+		<p>Джанго документация</p>
 		<a class="share-yt" href="https://django.fun/ru/" target="_blank" rel="nofollow"></a>
 		</li>
 	</ul>

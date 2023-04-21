@@ -1,22 +1,14 @@
 from django.http import HttpResponse, HttpResponseNotFound
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from .models import *
 
-menu = [
-        {'title': 'О сайте', 'url_name': 'about'},
-        {'title': 'добавить статью', 'url_name': 'add_page'},
-        {'title': 'Обратная связь', 'url_name': 'contact'},
-        {'title': 'Войти', 'url_name': 'login'},
 
-]
 
 def index(request):
     posts = Car.objects.all()
-    cats = Category.objects.all()
+    cats = Category.objects.all()    # это вытаскиваю из car_tags
     context = {
             'posts': posts,
-            'cats': cats,
-            'menu': menu,
             'title': 'Главная страница',
             'cat_selected': 0,
     }
@@ -32,17 +24,25 @@ def contact(request):
     return HttpResponse('<h1>Отображение по категориям</h1>')
 def login(request):
     return HttpResponse('<h1>Отображение по категориям</h1>')
-def show_post(request, post_id):
-    return HttpResponse(f'<h1>Отображение {post_id}</h1>')
 
+#_______________________________________кнопка читать пост___________________________________________
+def show_post(request, post_id):
+    post = get_object_or_404(Car, pk=post_id)
+    context = {
+        'post': post,
+        'title': post.title,
+        'cat_selected': post.cat_id,
+    }
+    return render(request, 'car/post.html', context=context)
+
+
+#_______________________________________ отображение по категориям ___________________________________________
 
 def show_category(request, cat_id):
     posts = Car.objects.filter(cat_id=cat_id)
-    cats = Category.objects.all()
+    #posts = Car.objects.all()             # это вытаскиваю из car_tags
     context = {
             'posts': posts,
-            'cats': cats,
-            'menu': menu,
             'title': 'Отображение по рубрикам',
             'cat_selected': cat_id,
     }
