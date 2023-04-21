@@ -27,7 +27,7 @@ urlpatterns = [
     path('contact/', contact, name="contact"),
     path('login/', login, name="login"),
     path('post/<int:post_id>', show_post, name="post"),
-    path('cats/<int:cat_id>/', categories, name="categories"),
+    path('category/<int:cat_id>/', show_category, name="category"),
 ]
 
 handler404 = pageNotFound

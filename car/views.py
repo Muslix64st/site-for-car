@@ -12,28 +12,41 @@ menu = [
 
 def index(request):
     posts = Car.objects.all()
-    context = {'posts': posts,
-               'menu': menu,
-               'title': 'Главная страница'
+    cats = Category.objects.all()
+    context = {
+            'posts': posts,
+            'cats': cats,
+            'menu': menu,
+            'title': 'Главная страница',
+            'cat_selected': 0,
     }
-    return render(request, 'car/index.html', context= context)
+    return render(request, 'car/index.html', context=context)
 
 
 
-def categories(request, cat_id): return HttpResponse(f'<h1>Отображение по категориям <p>{cat_id}</p></h1>')
-def about(request): return render(request, 'car/about.html', {'menu': menu, 'title': 'О сайте'})
+def about(request):
+    return render(request, 'car/about.html', {'menu': menu, 'title': 'О сайте'})
+def add_page(request):
+    return HttpResponse('<h1>Отображение по категориям</h1>')
+def contact(request):
+    return HttpResponse('<h1>Отображение по категориям</h1>')
+def login(request):
+    return HttpResponse('<h1>Отображение по категориям</h1>')
+def show_post(request, post_id):
+    return HttpResponse(f'<h1>Отображение {post_id}</h1>')
 
-def add_page(request):return HttpResponse('<h1>Отображение по категориям</h1>')
 
-
-def contact(request):return HttpResponse('<h1>Отображение по категориям</h1>')
-
-
-def login(request):return HttpResponse('<h1>Отображение по категориям</h1>')
-
-
-def show_post(request, post_id): return HttpResponse(f'<h1>Отображение {post_id}</h1>')
-
+def show_category(request, cat_id):
+    posts = Car.objects.filter(cat_id=cat_id)
+    cats = Category.objects.all()
+    context = {
+            'posts': posts,
+            'cats': cats,
+            'menu': menu,
+            'title': 'Отображение по рубрикам',
+            'cat_selected': cat_id,
+    }
+    return render(request, 'car/index.html', context=context)
 
 
 
