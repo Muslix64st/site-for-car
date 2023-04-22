@@ -21,13 +21,13 @@ from .views import *
 
 
 urlpatterns = [
-    path('', index,name="home"),                        #http://127.0.0.1:8000/
+    path('', CarHome.as_view(), name="home"),                        #http://127.0.0.1:8000/
     path('about/', about, name="about"),  #http://127.0.0.1:8000/cats/
-    path('add_page/', add_page, name="add_page"),
+    path('add_page/', AddPage.as_view(), name="add_page"),
     path('contact/', contact, name="contact"),
     path('login/', login, name="login"),
-    path('post/<slug:post_slug>/', show_post, name="post"),
-    path('category/<slug:cat_slug>/', show_category, name="category"),  # 'category/<int:cat_id>/'
+    path('post/<slug:post_slug>/', ShowPost.as_view(), name="post"),
+    path('category/<slug:cat_slug>/', CarCategory.as_view(), name="category"),  # 'category/<int:cat_id>/'
 ]
 
 handler404 = pageNotFound
