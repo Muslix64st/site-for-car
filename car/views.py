@@ -1,6 +1,7 @@
 from django.http import HttpResponse, HttpResponseNotFound
 from django.shortcuts import render, get_object_or_404, redirect
 from django.views.generic import ListView, DetailView, CreateView
+from django.urls import reverse_lazy
 from .forms import *
 from .models import *
 
@@ -43,6 +44,7 @@ class AddPage(CreateView):
     form_class = AddPostForm
     template_name = 'car/addpage.html'
     extra_context = {'title': 'Добавление статьи'}
+    #success_url = reverse_lazy('home') # перенаправление после добавления если отсутствует get_absolute_url
 
 #_____________________________________________
 
