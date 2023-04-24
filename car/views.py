@@ -4,70 +4,61 @@ from django.views.generic import ListView, DetailView, CreateView
 from django.urls import reverse_lazy
 from .forms import *
 from .models import *
-
+from .utils import *
 
 
 #_____________________________________________
 
 
-
-class CarHome(ListView):
+class CarHome(DataMixin, ListView):
     model = Car
     template_name = 'car/index.html'
     context_object_name = 'posts' # или переделать в index----- for p in object_list
-    extra_context = {'title': 'Главная страница',
-                     'cat_selected': 0}  # через этот параметр только неизменяемые данные передавать
 
-    def get_queryset(self):
-        return Car.objects.filter(is_published=True)
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super().get_context_data(**kwargs)
+        c_def = self.get_user_context(title = 'Главная страница')
 
-    """следующая функция для передачи динамического контекста. В ней мы обращаемся к классу ListView чтобы не 
-     затереть данные введённые выше (там уже 2 контекста есть). Функцию использовать не буду потому что
-     я передал меню через пользовательские теги. В функции берём уже сформированный словарь через параметр kwargs
-      распаковываем и добавляем меню(которое я убрал) """
+        return dict(list(context.items()) + list(c_def.items()))
 
-    # def get_context_data(self, *, object_list=None, **kwargs):
-    #     context = super().get_context_data(**kwargs)
-    #     context['menu'] = menu
-    #     return context
-
-
-
-#_____________________________________________
 
 def about(request):
     return render(request, 'car/about.html', {'title': 'О сайте'})
 
-#_____________________________________________
 
-class AddPage(CreateView):
+class AddPage(DataMixin, CreateView):
     form_class = AddPostForm
     template_name = 'car/addpage.html'
-    extra_context = {'title': 'Добавление статьи'}
-    #success_url = reverse_lazy('home') # перенаправление после добавления если отсутствует get_absolute_url
 
-#_____________________________________________
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super().get_context_data(**kwargs)
+        c_def = self.get_user_context(title = 'Добавление статьи')
+        return dict(list(context.items()) + list(c_def.items()))
+
 
 def contact(request):
     return HttpResponse('<h1>Отображение по категориям</h1>')
 
-#_____________________________________________
 
 def login(request):
     return HttpResponse('<h1>Отображение по категориям</h1>')
 
-#_______________________________________кнопка читать пост___________________________________________
 
-class ShowPost(DetailView):
+
+class ShowPost(DataMixin, DetailView):
     model = Car
     template_name = 'car/post.html'
     slug_url_kwarg = 'post_slug'
     context_object_name = 'post'
-    extra_context = {'title': 'Статья'}
 
-#_______________________________________ отображение по категориям ___________________________________________
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super().get_context_data(**kwargs)
+        c_def = self.get_user_context(title=context['post'])
+        return dict(list(context.items()) + list(c_def.items()))
 
-class CarCategory(ListView):
+
+
+class CarCategory(DataMixin, ListView):
     model = Car
     template_name = 'car/index.html'
     context_object_name = 'posts' # или переделать в index----- for p in object_list
@@ -75,19 +66,20 @@ class CarCategory(ListView):
     def get_queryset(self):
         return Car.objects.filter(cat__slug=self.kwargs['cat_slug'], is_published=True)
 
-
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['title'] = 'Категория - ' + str(context['posts'][0].cat)  # №15   15минута
-        context['cat_selected'] = context['posts'][0].cat_id
-        return context
+        c_def = self.get_user_context(title='Категория - ' + str(context['posts'][0].cat),
+                                      cat_selected=context['posts'][0].cat_id)
+        return dict(list(context.items()) + list(c_def.items()))
 
-#_____________________________________________
+
+
 
 def pageNotFound(request, exception):
     return HttpResponseNotFound(f'<h1>Ошибка! запрашиваемая страница отсутвует!!!! <p> pageNotFound</p> </h1>')
 
-#_________________________________________________функции______________________________________________
+
+
 
 
 # def index(request):

@@ -1,9 +1,9 @@
 <!--Параметры передаются из car_tags из функции show_categories-->
 <!-- указали cats потому что функция возвращает словарь  -->
-{% for c in cats %}
-		{% if c.pk == cat_selected %}
-			<li class="selected">{{ c.name }}</li>
-		{% else %}
-			<li><a href="{{ c.get_absolute_url }}">{{ c.name }}</a> </li>
-		{% endif %}
-{% endfor %}
+<!--{% for c in cats %}-->
+<!--		{% if c.pk == cat_selected %}-->
+<!--			<li class="selected">{{ c.name }}</li>-->
+<!--		{% else %}-->
+<!--			<li><a href="{{ c.get_absolute_url }}">{{ c.name }}</a> </li>-->
+<!--		{% endif %}-->
+<!--{% endfor %}-->
