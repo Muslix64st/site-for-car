@@ -131,7 +131,128 @@ Car.objects.filter(cat__slug='mini-avtomobili') обращаемся через 
                                                 моделью CATEGORY и через неё мы обращаемся к атрибуту slug 
                                                 равный тому что указано в ковычках. Результатом будет все объекты CAR
                                                 которые связанны с это категорией 
+Car.objects.filter(cat__in=[1])  то же самое сто написано выше только тут указали явно что брать 1 категорию
 
+Car.objects.filter(cat__name='маленькие автомобили')  тут тоже самое только обращаемся к name
+Car.objects.filter(cat__name__contains='Ы') выбрать все имена из категорий в именах категорий  присутствует буква Ы
++++++++++
+Category.objects.filter(car__title__contains='ли') через первичную модель (Category) обращаемся к модели CAR в которой
+                                                   выбираем все заголовки title в которых присутствует фрагмент строки ли
+                                                   и на выходе мы получим КАТЕГОРИИ
+
+Category.objects.filter(car__title__contains='ли').distinct() тоже самое только нам не вывалит кучу категорий а отобразит
+                                                                уникальные записи
+
+
+____________________________________ Агркгирующие функции ___________________________________________
+
+from django.db.models import *
+
+Car.objects.aggregate(Min('cat_id')) возвращает минимальный ID (то есть мин количество связанных категорий cat_id) 
+{'cat_id__min': 1}
+
+Car.objects.aggregate(Max('cat_id')) возвращает сколько всего связанных категорий 
+Car.objects.aggregate(Max('pk')) вернёт общее количество записей в категории кар
+
+Car.objects.aggregate(Min('cat_id'), Max('cat_id')) можно сразу вывести и два значения
+    {'cat_id__min': 1, 'cat_id__max': 2}
+    получаем словарь
+
+Car.objects.aggregate(cat_min=Min('cat_id'), cat_max=Max('cat_id'))
+        {'cat_min': 1, 'cat_max': 2}
+        получаем словарь с другими ключами
+        
+        
+_____________________________________VALUES______________________
+
+Car.objects.values('title', 'cat_id').get(pk=1)  выбрать запись РК=1 и выбрать только поля указанные в параметрах values        
+
+Car.objects.values('title', 'cat__name').get(pk=1) Взять первое поле и взять у него заголовок и категорию к которой он относится
+        {'title': 'Hong Guang Mini EV', 'cat__name': 'Мини-автомобили'}
+
+Car.objects.values('title', 'cat__name') Выбрать все поля title и связанные cat__name выдаст список словарей
+
+можно потом этот словарь и циклом крутить
+spoilt = Car.objects.values('title', 'cat__name')
+for row in spoilt:
+    print(row['title'], row['cat__name'])
+       
+Aixam Minauto Мини-автомобили
+Buddy Electric Мини-автомобили
+Daewoo Matiz Маленькие автомобили
+Fiat 500 Мини-автомобили
+Hong Guang Mini EV Мини-автомобили
+Mahindra e2o Мини-автомобили
+Peel P50 Мини-автомобили
+Peel Trident Мини-автомобили
+Renault Twizy Мини-автомобили
+Reva G-Wiz Мини-автомобили
+Smart ForTwo Мини-автомобили
+Toyota Yaris Маленькие автомобили
+Volkswagen Polo Маленькие автомобили
+Ариана гранд Мини-автомобили
+    
+
+
+_________________________________---Групировка записей агрегирующей функцией---_______________________________
+
+Обязательно проверить чтобы в моделях в классе мета была выключена сортировка (можно просто закоментить)
+
+Car.objects.values('cat_id').annotate(Count('id'))
+<QuerySet [{'cat_id': 1, 'id__count': 11}, {'cat_id': 2, 'id__count': 3}]>
+                                                на выходе увидим сколько записей принадлежит к каждой категории
+                                            
+c = Category.objects.annotate(Count('car')) если в качестве параметра укажем имя вторичной модели то получим все рубрики
+                                            то есть категории но также получим атрибут  car__count
+                                             через который можем видеть количество связанных с ней записей
+
+
+>>> c[3].car__count  можем обращаться чтобы видеть кол-во связанных с ней записей
+11
+
+c = Category.objects.annotate(total=Count('car')).filter(total__gt=0)
+                                        выбираем все рубрики с фильтром (количество записей больше нуля
+<QuerySet [<Category: Маленькие автомобили>, <Category: Мини-автомобили>]>
+
+
+________________________________________---F клас---_____________________________________
+from django.db.models import F
+
+Искуственный пример. Допустим у нас есть поле в таблице которое хранит кол-во просмотров поста
+и нам при каждом просмотре нужно увеличить кол-во просмотров допусти на 1 тогда можно выполнить
+следующий запрос........(этот пример отлично подходит и используется в социальных сетях
+
+Car objects.filter(slug='xxxxxx').update(views=F('views')+1) Тут обращаемся к определённому полю по слагу и обновляем значение
+
+
+___________________________________---Length---________________________________________________
+
+from django.db.models.functions import Length
+
+ps = Car.objects.annotate(len=Length('title')) тут получаем queryset со всеми заголовками но также и ещё одним параметром
+                                                который прокрутим в цикле
+                                                
+for x in ps:
+    print(x.title, x.len) 
+                                               
+Aixam Minauto 13
+Buddy Electric 14
+Daewoo Matiz 12
+Fiat 500 8
+Hong Guang Mini EV 18
+Mahindra e2o 12
+Peel P50 8
+Peel Trident 12
+Renault Twizy 13
+Reva G-Wiz 10
+Smart ForTwo 12
+Toyota Yaris 12
+Volkswagen Polo 15
+
+
+____________________________________---RAW SQL---__________________________________________
+
+Car.objects.raw('SELECT * FROM car_car')
 
 
 
