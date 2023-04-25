@@ -26,7 +26,7 @@
 {% endfor %}
 							</ul>
 			<div class="clear"></div>
-		</div>-------------------------------------------------------------------------------------------->
+		</div>
 
 {% endblock mainmenu %}
 
@@ -44,11 +44,13 @@
 {% endif %}
 
 {% for c in cats %}
+{% if c.car__count > 0 %}
 		{% if c.pk == cat_selected %}
 			<li class="selected">{{ c.name }}</li>
 		{% else %}
 			<li><a href="{{ c.get_absolute_url }}">{{ c.name }}</a> </li>
 		{% endif %}
+{% endif %}
 {% endfor %}
 
 		<li class="share">
@@ -67,8 +69,25 @@
 	<div class="content-text">
 {% block content %}
 {% endblock %}
+<!------------------------------------------------------------------------------------------------------------------->
+<nav class="pagination">
+		<ul>
+	{% if page_obj.has_previous %}
+  		<a class="prev" href="?page={{ page_obj.previous_page_number }}">назад«««</a>
+	{% endif %}
+
+	{% for p in paginator.page_range %}
+  		<a href="?page={{ p }}">{{ p }}</a>
+	{% endfor %}
+
+  	{% if page_obj.has_next %}
+		<a class="next" href="?page={{ page_obj.next_page_number }}">»»»вперёд</a>
+  	{% endif %}
+		</ul>
+</nav>
+
 	</div>
-<!-- Конец блока контента -->
+<!-- Конец блока контента------------------------------------------------------------------------------------ -->
 
 </td></tr></table>
 </td></tr>
