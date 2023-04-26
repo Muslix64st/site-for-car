@@ -1,3 +1,4 @@
+
 from django.http import HttpResponse, HttpResponseNotFound
 from django.shortcuts import render, get_object_or_404, redirect
 from django.views.generic import ListView, DetailView, CreateView
@@ -45,7 +46,19 @@ def contact(request):
 
 
 def login(request):
-    return HttpResponse('<h1>Отображение по категориям</h1>')
+    return HttpResponse('<h1>Сюда попали после регистрации</h1>')
+
+
+class RegisterUser(DataMixin, CreateView):
+    form_class = RegisterUserForm
+    template_name = 'car/register.html'
+    success_url = reverse_lazy('login')
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super().get_context_data(**kwargs)
+        c_def = self.get_user_context(title='Регистрация')
+        return dict(list(context.items()) + list(c_def.items()))
+
 
 
 
