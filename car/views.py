@@ -1,4 +1,6 @@
-
+from django.contrib.auth import logout, login
+from django.contrib.auth.forms import AuthenticationForm
+from django.contrib.auth.views import LoginView
 from django.http import HttpResponse, HttpResponseNotFound
 from django.shortcuts import render, get_object_or_404, redirect
 from django.views.generic import ListView, DetailView, CreateView
@@ -10,19 +12,18 @@ from .models import *
 from .utils import *
 
 
-#_____________________________________________
-
-
 class CarHome(DataMixin, ListView):
     model = Car
     template_name = 'car/index.html'
-    context_object_name = 'posts' # или переделать в index----- for p in object_list
+    context_object_name = 'posts'  # или переделать в index----- for p in object_list
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
-        c_def = self.get_user_context(title = 'Главная страница')
-
+        c_def = self.get_user_context(title='Главная страница')
         return dict(list(context.items()) + list(c_def.items()))
+
+    def get_queryset(self):
+        return Car.objects.select_related('cat').filter(is_published=True)  # .select_related('cat')
 
 
 def about(request):
@@ -37,7 +38,7 @@ class AddPage(LoginRequiredMixin, DataMixin, CreateView):
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
-        c_def = self.get_user_context(title = 'Добавление статьи')
+        c_def = self.get_user_context(title='Добавление статьи')
         return dict(list(context.items()) + list(c_def.items()))
 
 
@@ -45,10 +46,10 @@ def contact(request):
     return HttpResponse('<h1>Отображение по категориям</h1>')
 
 
-def login(request):
-    return HttpResponse('<h1>Сюда попали после регистрации</h1>')
+# def login(request):
+#     return HttpResponse('<h1>Сюда попали после регистрации</h1>')
 
-
+# ________________________________________---REGISTRED---___________________________________________________
 class RegisterUser(DataMixin, CreateView):
     form_class = RegisterUserForm
     template_name = 'car/register.html'
@@ -59,7 +60,31 @@ class RegisterUser(DataMixin, CreateView):
         c_def = self.get_user_context(title='Регистрация')
         return dict(list(context.items()) + list(c_def.items()))
 
+    def form_valid(self, form):
+        user = form.save()
+        login(self.request, user)
+        return redirect('home')
 
+
+class LoginUser(DataMixin, LoginView):
+    form_class = LoginUserForm
+    template_name = 'car/login.html'
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super().get_context_data(**kwargs)
+        c_def = self.get_user_context(title="Авторизация")
+        return dict(list(context.items()) + list(c_def.items()))
+
+    def get_success_url(self):
+        return reverse_lazy('home')
+
+
+def logout_user(request):
+    logout(request)
+    return redirect('login')
+
+
+# _______________________________________________________END REGISTER__________________________________________________
 
 
 class ShowPost(DataMixin, DetailView):
@@ -74,30 +99,28 @@ class ShowPost(DataMixin, DetailView):
         return dict(list(context.items()) + list(c_def.items()))
 
 
-
 class CarCategory(DataMixin, ListView):
     model = Car
     template_name = 'car/index.html'
-    context_object_name = 'posts' # или переделать в index----- for p in object_list
+    context_object_name = 'posts'  # или переделать в index----- for p in object_list
     allow_empty = False
-    def get_queryset(self):
-        return Car.objects.filter(cat__slug=self.kwargs['cat_slug'], is_published=True)
 
+    def get_queryset(self):
+        return Car.objects.select_related('cat').filter(cat__slug=self.kwargs['cat_slug'],
+                                                        is_published=True)  # .select_related('cat')
+
+    # return Car.objects.select_related('cat').filter(cat__slug=self.kwargs['cat_slug'],
+    #                                                 is_published=True)  # .select_related('cat')
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
-        c_def = self.get_user_context(title='Категория - ' + str(context['posts'][0].cat),
-                                      cat_selected=context['posts'][0].cat_id)
+        spoilt = Category.objects.get(slug=self.kwargs['cat_slug'])
+        c_def = self.get_user_context(title='Категория - ' + str(spoilt.name),
+                                      cat_selected=spoilt.pk)
         return dict(list(context.items()) + list(c_def.items()))
-
-
 
 
 def pageNotFound(request, exception):
     return HttpResponseNotFound(f'<h1>Ошибка! запрашиваемая страница отсутвует!!!! <p> pageNotFound</p> </h1>')
-
-
-
-
 
 # def index(request):
 #     posts = Car.objects.all()
@@ -108,8 +131,6 @@ def pageNotFound(request, exception):
 #             'cat_selected': 0,
 #     }
 #     return render(request, 'car/index.html', context=context)
-
-
 
 
 # def add_page(request):

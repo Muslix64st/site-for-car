@@ -1,31 +1,16 @@
-"""
-URL configuration for allcar project.
-
-The `urlpatterns` list routes URLs to views. For more information please see:
-    https://docs.djangoproject.com/en/4.2/topics/http/urls/
-Examples:
-Function views
-    1. Add an import:  from my_app import views
-    2. Add a URL to urlpatterns:  path('', views.home, name='home')
-Class-based views
-    1. Add an import:  from other_app.views import Home
-    2. Add a URL to urlpatterns:  path('', Home.as_view(), name='home')
-Including another URLconf
-    1. Import the include() function: from django.urls import include, path
-    2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
-"""
-# from django.core.files.storage import handler
+from django.views.decorators.cache import cache_page
 from django.urls import path
 from .views import *
 
 
 
 urlpatterns = [
-    path('', CarHome.as_view(), name="home"),
+    path('', cache_page(60)(CarHome.as_view()), name="home"),
     path('about/', about, name="about"),
     path('add_page/', AddPage.as_view(), name="add_page"),
     path('contact/', contact, name="contact"),
-    path('login/', login, name="login"),
+    path('login/', LoginUser.as_view(), name="login"),
+    path('logout/', logout_user, name="logout"),
     path('register/', RegisterUser.as_view(), name="register"),  # RegisterUser.as_view
     path('post/<slug:post_slug>/', ShowPost.as_view(), name="post"),
     path('category/<slug:cat_slug>/', CarCategory.as_view(), name="category"),
