@@ -27,6 +27,7 @@ from car.views import *
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('car.urls')),
+    path('captcha/', include('captcha.urls')),
 
 
 ]
